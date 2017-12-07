@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.gabriel.jogodavelhaonline.InicialActivity;
+import com.example.gabriel.jogodavelhaonline.JogoActivity;
 import com.example.gabriel.jogodavelhaonline.LobbyActivity;
 
 import org.json.JSONException;
@@ -22,19 +23,21 @@ import java.util.Scanner;
  * Created by gabriel on 05/12/2017.
  */
 
-public class CriaJogoThread extends AsyncTask<String, String, String> {
-    private String nome;
+public class EntraJogoThread extends AsyncTask<String, String, String> {
+    private Integer codigoJogo;
     private InicialActivity inicialActivity;
+    private String nomeJogador2;
     ProgressDialog dialog;
 
-    public CriaJogoThread(InicialActivity inicialActivity, String nome) {
+    public EntraJogoThread(InicialActivity inicialActivity, Integer codigoJogo, String nomeJogador2) {
         this.inicialActivity = inicialActivity;
-        this.nome = nome;
+        this.codigoJogo = codigoJogo;
+        this.nomeJogador2 = nomeJogador2;
     }
 
     @Override
     protected void onPreExecute() {
-        dialog = new ProgressDialog(inicialActivity);
+        dialog = new ProgressDialog(inicialActivity );
         dialog.setTitle("Carregando...");
         dialog.setIndeterminate(true);
         dialog.show();
@@ -43,10 +46,11 @@ public class CriaJogoThread extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... strings) {
         try {
-            String url = "http://aporteconstrutora.com.br/json/tictactoe/cria_partida.php";
+            String url = "http://aporteconstrutora.com.br/json/tictactoe/entra_partida.php";
             String charset = "UTF-8";
 
-            String query = URLEncoder.encode("nome", "UTF-8") + "=" + URLEncoder.encode(nome, "UTF-8" );
+            String query = URLEncoder.encode("codigo", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(codigoJogo), "UTF-8" );
+            query += "&" + URLEncoder.encode("nome", "UTF-8") + "=" + URLEncoder.encode(nomeJogador2, "UTF-8" );
 
             URLConnection connection = new URL(url + "?" + query).openConnection();
             connection.setRequestProperty("Accept-Charset", charset);
@@ -73,27 +77,29 @@ public class CriaJogoThread extends AsyncTask<String, String, String> {
             JSONObject jObjectGeral = new JSONObject(result);
 
             int success = jObjectGeral.getInt("success");
+            String jogador1 = jObjectGeral.getString("jogador1");
 
-            if (success == 0) {
-                Toast.makeText(inicialActivity, "OOPs! Algo deu errado.", Toast.LENGTH_LONG).show();
+            if (success == 0 && jogador1.equals("null")) {
+                Toast.makeText(inicialActivity, "Partida não encontrada", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(inicialActivity, "Jogo criado com sucesso!", Toast.LENGTH_LONG).show();
-                int codigoJogo = jObjectGeral.getInt("codigo");
+                Toast.makeText(inicialActivity, "Oponente encontrado!", Toast.LENGTH_LONG).show();
 
-                abreLobby(codigoJogo);
+                abrePartida(jogador1);
             }
 
         } catch (JSONException e) {
-            Toast.makeText(inicialActivity, "OOPs! Algo deu errado." + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(inicialActivity, "OOPs! Algo deu errado..." + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        dialog.dismiss();
+//        dialog.dismiss();
     }
 
-    private void abreLobby(int codigoJogo) {
-        Intent intent = new Intent(inicialActivity, LobbyActivity.class);
-
+    private void abrePartida(String jogador1) {
+        Intent intent = new Intent(inicialActivity, JogoActivity.class);
         intent.putExtra("codigoJogo", codigoJogo);
-        intent.putExtra("nomeJogador1", nome);
+        intent.putExtra("jogador1", jogador1);
+        intent.putExtra("jogador2", nomeJogador2);
+        intent.putExtra("criador", false);
         inicialActivity.startActivity(intent);
+        inicialActivity.finish();
     }
 }

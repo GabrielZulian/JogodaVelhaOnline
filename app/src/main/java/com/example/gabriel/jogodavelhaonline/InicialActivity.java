@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.gabriel.jogodavelhaonline.threads.CriaJogoThread;
+import com.example.gabriel.jogodavelhaonline.threads.EntraJogoThread;
 
 public class InicialActivity extends AppCompatActivity {
 
@@ -28,6 +29,15 @@ public class InicialActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String nome = edtNomeJogador.getText().toString();
                 new CriaJogoThread(InicialActivity.this, nome).execute();
+            }
+        });
+
+        btnEntrarJogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String nome = edtNomeJogador.getText().toString();
+                Integer codigoJogo = Integer.valueOf(edtCodigoJogo.getText().toString());
+                new EntraJogoThread(InicialActivity.this, codigoJogo, nome).execute();
             }
         });
     }

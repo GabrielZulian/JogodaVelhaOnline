@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.gabriel.jogodavelhaonline.InicialActivity;
+import com.example.gabriel.jogodavelhaonline.JogoActivity;
 import com.example.gabriel.jogodavelhaonline.LobbyActivity;
 
 import org.json.JSONException;
@@ -22,19 +22,19 @@ import java.util.Scanner;
  * Created by gabriel on 05/12/2017.
  */
 
-public class CriaJogoThread extends AsyncTask<String, String, String> {
-    private String nome;
-    private InicialActivity inicialActivity;
+public class ReiniciaJogoThread extends AsyncTask<String, String, String> {
+    private Integer codigo;
+    private JogoActivity jogoActivity;
     ProgressDialog dialog;
 
-    public CriaJogoThread(InicialActivity inicialActivity, String nome) {
-        this.inicialActivity = inicialActivity;
-        this.nome = nome;
+    public ReiniciaJogoThread(JogoActivity jogoActivity, Integer codigo) {
+        this.jogoActivity = jogoActivity;
+        this.codigo = codigo;
     }
 
     @Override
     protected void onPreExecute() {
-        dialog = new ProgressDialog(inicialActivity);
+        dialog = new ProgressDialog(jogoActivity);
         dialog.setTitle("Carregando...");
         dialog.setIndeterminate(true);
         dialog.show();
@@ -43,10 +43,10 @@ public class CriaJogoThread extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... strings) {
         try {
-            String url = "http://aporteconstrutora.com.br/json/tictactoe/cria_partida.php";
+            String url = "http://aporteconstrutora.com.br/json/tictactoe/zera_partida.php";
             String charset = "UTF-8";
 
-            String query = URLEncoder.encode("nome", "UTF-8") + "=" + URLEncoder.encode(nome, "UTF-8" );
+            String query = URLEncoder.encode("codigo", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(codigo), "UTF-8" );
 
             URLConnection connection = new URL(url + "?" + query).openConnection();
             connection.setRequestProperty("Accept-Charset", charset);
@@ -75,25 +75,15 @@ public class CriaJogoThread extends AsyncTask<String, String, String> {
             int success = jObjectGeral.getInt("success");
 
             if (success == 0) {
-                Toast.makeText(inicialActivity, "OOPs! Algo deu errado.", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(inicialActivity, "Jogo criado com sucesso!", Toast.LENGTH_LONG).show();
-                int codigoJogo = jObjectGeral.getInt("codigo");
 
-                abreLobby(codigoJogo);
+            } else {
+                jogoActivity.reiniciaPartida();
+                Toast.makeText(jogoActivity, "zerado!", Toast.LENGTH_LONG).show();
             }
 
         } catch (JSONException e) {
-            Toast.makeText(inicialActivity, "OOPs! Algo deu errado." + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(jogoActivity, "OOPs! Algo deu errado..." + e.getMessage(), Toast.LENGTH_LONG).show();
         }
         dialog.dismiss();
-    }
-
-    private void abreLobby(int codigoJogo) {
-        Intent intent = new Intent(inicialActivity, LobbyActivity.class);
-
-        intent.putExtra("codigoJogo", codigoJogo);
-        intent.putExtra("nomeJogador1", nome);
-        inicialActivity.startActivity(intent);
     }
 }

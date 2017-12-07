@@ -26,6 +26,15 @@
         android:weightSum="1">
 
         <TextView
+            android:id="@+id/tvCodigoJogo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Código:"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
+
+        <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
