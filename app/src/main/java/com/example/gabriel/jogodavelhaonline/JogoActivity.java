@@ -39,6 +39,7 @@ public class JogoActivity extends AppCompatActivity implements View.OnClickListe
 
     Integer vitoriasJog1 = 0;
     Integer vitoriasJog2 = 0;
+    private boolean primeiraJogada;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,7 @@ public class JogoActivity extends AppCompatActivity implements View.OnClickListe
 
         for (ImageButton btn : btns) {
             btn.setOnClickListener(this);
+            btn.setImageDrawable(null);
         }
 
         Bundle extras = getIntent().getExtras();
@@ -82,6 +84,7 @@ public class JogoActivity extends AppCompatActivity implements View.OnClickListe
 
     private void iniciaJogo() {
         if(jogador1) {
+            primeiraJogada = true;
             tvVisor.setText("Sua vez!");
             seuShape = "x";
             shapeOponente = "o";
@@ -144,7 +147,6 @@ public class JogoActivity extends AppCompatActivity implements View.OnClickListe
         for (ImageButton btn : btns) {
             btn.setEnabled(false);
         }
-
         final Handler handler = new Handler();
         timer = new Timer();
 
@@ -155,9 +157,9 @@ public class JogoActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void run() {
                         new ConsultaJogoThread(JogoActivity.this, codigoJogo, seuShape).execute();
-                        Log.d("codigojogo", "ttt");
 
                         if(suaVez) {
+                            Log.d("teste", "ttt");
                             timer.cancel();
                             atualizaCampo();
                         }
@@ -168,7 +170,7 @@ public class JogoActivity extends AppCompatActivity implements View.OnClickListe
         timer.schedule(verificaTask, 0, 4000);
     }
 
-    private void atualizaCampo() {
+    public void atualizaCampo() {
         for (int x = 0; x<9; x++) {
             if (campo[x] == XIS)
                 btns[x].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.xis));
@@ -200,6 +202,8 @@ public class JogoActivity extends AppCompatActivity implements View.OnClickListe
                 tvVitoriasJogador1.setText(vitoriasJog1+"");
             } else {
                 Toast.makeText(this, "Você perdeu!", Toast.LENGTH_LONG).show();
+                vitoriasJog2++;
+                tvVitoriasJogador2.setText(vitoriasJog2+"");
             }
             reiniciaPartida();
             return true;
@@ -217,6 +221,8 @@ public class JogoActivity extends AppCompatActivity implements View.OnClickListe
                 tvVitoriasJogador2.setText(vitoriasJog2+"");
             }  else {
                 Toast.makeText(this, "Você perdeu!", Toast.LENGTH_LONG).show();
+                vitoriasJog1++;
+                tvVitoriasJogador1.setText(vitoriasJog1+"");
             }
             reiniciaPartida();
             return true;

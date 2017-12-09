@@ -79,11 +79,10 @@ public class ConsultaJogoThread extends AsyncTask<String, String, String> {
             int success = jObjectGeral.getInt("success");
 
             JSONArray jArrayjogo = jObjectGeral.getJSONArray("jogo");
-
             if (success == 0) {
-
+                Toast.makeText(jogoActivity, "Oponente ainda n jogou!", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(jogoActivity, "Oponente Jogou!", Toast.LENGTH_LONG).show();
+                Toast.makeText(jogoActivity, "Oponente Jogou!", Toast.LENGTH_SHORT).show();
                 jogoActivity.suaVez = true;
                 jogoActivity.campo[0] = jArrayjogo.getJSONObject(0).getInt("0");
                 jogoActivity.campo[1] = jArrayjogo.getJSONObject(0).getInt("1");
@@ -94,10 +93,12 @@ public class ConsultaJogoThread extends AsyncTask<String, String, String> {
                 jogoActivity.campo[6] = jArrayjogo.getJSONObject(0).getInt("6");
                 jogoActivity.campo[7] = jArrayjogo.getJSONObject(0).getInt("7");
                 jogoActivity.campo[8] = jArrayjogo.getJSONObject(0).getInt("8");
+                jogoActivity.atualizaCampo();
+                Log.d("Ultimo a jogar= ", jArrayjogo.getJSONObject(0).getString("ultimoJogar"));
             }
 
         } catch (JSONException e) {
-            Toast.makeText(jogoActivity, "OOPs! Algo deu errado..." + e.getMessage(), Toast.LENGTH_LONG).show();
+           Toast.makeText(jogoActivity, "OOPs! Algo deu errado..." + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 //        dialog.dismiss();
     }
